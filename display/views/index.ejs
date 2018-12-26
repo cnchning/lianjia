@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='./stylesheets/style.css' />
+    <script type="text/javascript" src="https://siguomng.zwxgame.net/javascripts/echarts.common.min.js"></script>
+    <script type="text/javascript" src="https://siguomng.zwxgame.net/javascripts/jquery-1.10.2.min.js"></script>
+  </head>
+  <body>
+    <div style="">
+      <div style="width: 98%; background-color: aliceblue;">
+        <div style="font-weight: bold; font-size: larger; text-align: center;margin: 10px;">调价数量</div>
+        <div id="changePriceNum" style="width:100%;height: 260px;margin: 0 auto;"></div>
+      </div>
+      <div style="width: 98%; background-color: aliceblue;">
+        <div style="font-weight: bold; font-size: larger; text-align: center;margin: 10px;">行政区单价变化</div>
+        <div id="districtAvgPrice" style="width:100%;height: 260px;margin: 0 auto;"></div>
+      </div>
+      <div style="width: 98%; background-color: aliceblue;">
+        <div style="font-weight: bold; font-size: larger; text-align: center;margin: 10px;">片区单价变化</div>
+        <div id="positionAvgPrice" style="width:100%;height: 260px;margin: 0 auto;"></div>
+      </div>
+      <div style="width: 98%; background-color: aliceblue;">
+        <div style="font-weight: bold; font-size: larger; text-align: center;margin: 10px;">小区单价变化</div>
+        <div id="estateAvgPrice" style="width:100%;height: 260px;margin: 0 auto;"></div>
+      </div>
+      <div style="width: 98%; background-color: aliceblue;">
+        <div style="font-weight: bold; font-size: larger; text-align: center;margin: 10px;">户型单价变化</div>
+        <div id="bedroomAvgPrice" style="width:100%;height: 260px;margin: 0 auto;"></div>
+      </div>
+    </div>
+    <script type="text/javascript">
+        var cpn = echarts.init(document.getElementById('changePriceNum'));
+        var optionMain = {
+            title: {},
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                },
+            },
+            legend: {
+                data: ['调价总数', '降价数', '涨价数']
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    dataView: {readOnly: true},
+                    magicType: {type: ['line', 'bar']},
+                    restore: {},
+                    saveAsImage: {}
+                },
+                right: '80px'
+            },
+            xAxis: {
+                type: 'category',
+                data: [<%= x %>]
+            },
+            yAxis: {},
+            series: [{
+                name: '调价总数',
+                type: 'line',
+                smooth: true,
+                data: [<%= ytotal %>]
+            },{
+                name: '降价数',
+                type: 'line',
+                smooth: true,
+                data: [<%= ydown %>]
+            },{
+                name: '涨价数',
+                type: 'line',
+                smooth: true,
+                data: [<%= yup %>]
+            },]
+        };
+        cpn.setOption(optionMain);
+
+        $(function () {
+            var dap = echarts.init(document.getElementById('districtAvgPrice'));
+            dap.showLoading();
+            $.ajax({
+                url: './getdap',
+                type: 'post',
+                data: {district:['锦江','龙泉驿', '成华', '高新', '双流', '武侯'],dt:'day'},
+                success: function (resp) {
+                    dap.hideLoading();
+                    console.log(typeof resp);
+                    resp = JSON.parse(resp);
+                    ylist = [];
+                    for(var i=0; i<resp.y.length; i++){
+                        ylist.push({
+                            name: resp.y[i],
+                            type: 'line',
+                            smooth: true,
+                            data: resp.data[resp.y[i]]
+                        })
+                    }
+
+                    dap.setOption({
+                      xAxis: {
+                          data: resp.x
+                      },
+                      legend: {
+                          data: resp.y
+                      },
+                      toolbox: {
+                          show: true,
+                          feature: {
+                              dataView: {readOnly: true},
+                              magicType: {type: ['line', 'bar']},
+                              restore: {},
+                              saveAsImage: {}
+                          },
+                          right: '80px'
+                      },
+                      yAxis: {},
+                      series: ylist
+                    });
+                },
+                error: function () {
+                    dap.hideLoading();
+                    alert('获取单价失败！');
+                }
+            });
+
+            var pap = echarts.init(document.getElementById('positionAvgPrice'));
+            pap.showLoading();
+            $.ajax({
+                url: './getpap',
+                type: 'post',
+                data: {position:['三圣乡','卓锦城', '大面', '洪河', '蓝谷地'],dt:'day'},
+                success: function (resp) {
+                    pap.hideLoading();
+                    console.log(resp);
+                    resp = JSON.parse(resp);
+                    ylist = [];
+                    for(var i=0; i<resp.y.length; i++){
+                        ylist.push({
+                            name: resp.y[i],
+                            type: 'line',
+                            smooth: true,
+                            data: resp.data[resp.y[i]]
+                        })
+                    }
+
+                    pap.setOption({
+                        xAxis: {
+                            data: resp.x
+                        },
+                        legend: {
+                            data: resp.y
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                dataView: {readOnly: true},
+                                magicType: {type: ['line', 'bar']},
+                                restore: {},
+                                saveAsImage: {}
+                            },
+                            right: '80px'
+                        },
+                        yAxis: {},
+                        series: ylist
+                    });
+                },
+                error: function () {
+                    pap.hideLoading();
+                    alert('获取单价失败！');
+                }
+            })
+
+            var eap = echarts.init(document.getElementById('estateAvgPrice'));
+            eap.showLoading();
+            $.ajax({
+                url: './geteap',
+                type: 'post',
+                data: {estate:['锦江城市花园二期','合能锦城', '华韵天府', '和祥瑞苑', '东洪广厦','卓锦城六期','鑫苑名家二期','锦蓉佳苑','金茂悦龙山','龙城1号','上东阳光林曦'],dt:'day'},
+                success: function (resp) {
+                    eap.hideLoading();
+                    console.log(resp);
+                    resp = JSON.parse(resp);
+                    ylist = [];
+                    for(var i=0; i<resp.y.length; i++){
+                        ylist.push({
+                            name: resp.y[i],
+                            type: 'line',
+                            smooth: true,
+                            data: resp.data[resp.y[i]]
+                        })
+                    }
+
+                    eap.setOption({
+                        xAxis: {
+                            data: resp.x
+                        },
+                        legend: {
+                            data: resp.y
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                dataView: {readOnly: true},
+                                magicType: {type: ['line', 'bar']},
+                                restore: {},
+                                saveAsImage: {}
+                            },
+                            right: '80px'
+                        },
+                        yAxis: {},
+                        series: ylist
+                    });
+                },
+                error: function () {
+                    eap.hideLoading();
+                    alert('获取单价失败！');
+                }
+            })
+
+            var bap = echarts.init(document.getElementById('bedroomAvgPrice'));
+            bap.showLoading();
+            $.ajax({
+                url: './getbap',
+                type: 'post',
+                data: {district:['a','b'],dt:'day'},
+                success: function (resp) {
+                    bap.hideLoading();
+                    console.log(resp);
+                    resp = JSON.parse(resp);
+                    ylist = [];
+                    for(var i=0; i<resp.y.length; i++){
+                        ylist.push({
+                            name: resp.y[i],
+                            type: 'line',
+                            smooth: true,
+                            data: resp.data[resp.y[i]]
+                        })
+                    }
+
+                    bap.setOption({
+                        xAxis: {
+                            data: resp.x
+                        },
+                        legend: {
+                            data: resp.y
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                dataView: {readOnly: true},
+                                magicType: {type: ['line', 'bar']},
+                                restore: {},
+                                saveAsImage: {}
+                            },
+                            right: '80px'
+                        },
+                        yAxis: {},
+                        series: ylist
+                    });
+                },
+                error: function () {
+                    bap.hideLoading();
+                    alert('获取单价失败！');
+                }
+            })
+        })
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+[dbMysql]
+host = 192.168.1.196
+port = 3306
+user = root
+password = ZWX#ztpms$7788
+db_name = lianjia
