@@ -9,7 +9,7 @@
   <body>
     <div style="">
       <div style="width: 98%; background-color: aliceblue;">
-        <div style="font-weight: bold; font-size: larger; text-align: center;margin: 10px;">调价数量</div>
+        <div style="font-weight: bold; font-size: larger; text-align: center;margin: 10px;">调价数量（总房源： <%= nh %>套）</div>
         <div id="changePriceNum" style="width:100%;height: 260px;margin: 0 auto;"></div>
       </div>
       <div style="width: 98%; background-color: aliceblue;">
@@ -38,6 +38,7 @@
                 axisPointer: {
                     type: 'cross'
                 },
+//                formatter: '{a} <br/>{b} : {c} ({d}%)'
             },
             legend: {
                 data: ['调价总数', '降价数', '涨价数']
@@ -54,23 +55,53 @@
             },
             xAxis: {
                 type: 'category',
+                name: '日期',
                 data: [<%= x %>]
             },
-            yAxis: {},
+            yAxis: {
+                type: 'value',
+                name: '房屋数',
+                axisLabel: {
+                    formatter: '{value} 套'
+                }
+            },
             series: [{
                 name: '调价总数',
                 type: 'line',
                 smooth: true,
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'top'
+                    }
+                },
+                markLine : {
+                    data : [
+                        {type : 'average', name : '平均值'}
+                    ]
+                },
                 data: [<%= ytotal %>]
             },{
                 name: '降价数',
                 type: 'line',
                 smooth: true,
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'bottom'
+                    }
+                },
                 data: [<%= ydown %>]
             },{
                 name: '涨价数',
                 type: 'line',
                 smooth: true,
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'top'
+                    }
+                },
                 data: [<%= yup %>]
             },]
         };
@@ -114,7 +145,12 @@
                           },
                           right: '80px'
                       },
-                      yAxis: {},
+                      yAxis: {
+                          type: 'value',
+                          axisLabel: {
+                              formatter: '{value} 元'
+                          }
+                      },
                       series: ylist
                     });
                 },

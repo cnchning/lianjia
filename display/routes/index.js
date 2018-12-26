@@ -5,10 +5,9 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  mysql.query('select ymd, num_priceup as up, num_pricedown as down, num_pricedown+num_priceup as total from maininfo order by ymd limit 60', function (err, data) {
+  mysql.query('select ymd, num_priceup as up, num_pricedown as down, num_pricedown+num_priceup as total,num_house as nh from maininfo order by ymd limit 60', function (err, data) {
       // logger.debug(data);
-      if(!data) return false;
-      var x=[],ytotal=[],ydown=[],yup=[];
+      var x=[],ytotal=[],ydown=[],yup=[], nh=data[data.length-1].nh;
       for(var i=0;i<data.length;i++){
           x.push(data[i].ymd);
           ytotal.push(data[i].total);
@@ -16,7 +15,7 @@ router.get('/', function(req, res, next) {
           ydown.push(data[i].down);
       }
 
-      res.render('index', { title: '走势',x:x, ytotal:ytotal, ydown:ydown, yup:yup });
+      res.render('index', { title: '走势',x:x, ytotal:ytotal, ydown:ydown, yup:yup, nh: nh });
   });
 });
 
