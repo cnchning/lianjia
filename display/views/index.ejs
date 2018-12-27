@@ -3,14 +3,18 @@
   <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='./stylesheets/style.css' />
-    <script type="text/javascript" src="https://siguomng.zwxgame.net/javascripts/echarts.common.min.js"></script>
+    <script type="text/javascript" src="./javascripts/echarts.min.js"></script>
     <script type="text/javascript" src="https://siguomng.zwxgame.net/javascripts/jquery-1.10.2.min.js"></script>
   </head>
   <body>
     <div style="">
       <div style="width: 98%; background-color: aliceblue;">
-        <div style="font-weight: bold; font-size: larger; text-align: center;margin: 10px;">调价数量（总房源： <%= nh %>套）</div>
+        <div style="font-weight: bold; font-size: larger; text-align: center;margin: 10px;">调价数量（总数： <%= nh %>套）</div>
         <div id="changePriceNum" style="width:100%;height: 260px;margin: 0 auto;"></div>
+      </div>
+      <div style="width: 98%; background-color: aliceblue;">
+        <div style="font-weight: bold; font-size: larger; text-align: center;margin: 10px;"></div>
+        <div id="districtCompare" style="width:100%;height: 380px;margin: 0 auto;"></div>
       </div>
       <div style="width: 98%; background-color: aliceblue;">
         <div style="font-weight: bold; font-size: larger; text-align: center;margin: 10px;">行政区单价变化</div>
@@ -108,6 +112,168 @@
         cpn.setOption(optionMain);
 
         $(function () {
+            var dstcpr = echarts.init(document.getElementById('districtCompare'));
+            dstcpr.showLoading();
+            $.ajax({
+                url: './getdstcpr',
+                type: 'post',
+                data: {},
+                success: function (resp) {
+                    dstcpr.hideLoading();
+                    resp = JSON.parse(resp);
+                    var vals = [];
+                    for(var i=0; i<resp.data.length; i++){
+                        val = {
+                            value: resp.data[i].val,
+                            name: resp.data[i].district,
+                            symbol: 'rect',
+                            symbolSize: 5,
+                            emphasis: {
+                                areaStyle: {
+                                    color: 'rgba(0,250,0,0.3)'
+                                }
+                            },
+                            lineStyle: {
+                                normal: {
+                                    type: 'solid'//'dashed'
+                                }
+                            }
+                        }
+                        if(val.name =='锦江')
+                            val.label = { normal: { show: true, position: 'right',color:'red', backgroundColor:'#888888', padding:2 }};
+                        vals.push(val);
+                    }
+                    var bvals = [];
+                    for(var i=0; i<resp.bdata.length; i++){
+                        bval = {
+                            value: resp.bdata[i].val,
+                            name: resp.bdata[i].bn,
+                            symbol: 'retangle',
+                            emphasis: {
+                                areaStyle: {
+                                    color: 'rgba(0,250,0,0.3)'
+                                }
+                            },
+                            symbolSize: 5
+                        };
+                        if(resp.bdata[i].bn=='3居室')
+                            bval.label = { normal: { show: true, position: 'right',color:'red', backgroundColor:'#888888', padding:2 }};
+                        bvals.push(bval);
+                    }
+
+                    ylist = [{
+                        name: '各区域对比',
+                        type: 'radar',
+                        itemStyle: {
+                            emphasis: {
+                                lineStyle: {
+                                    width: 4
+//                                },
+//                                areaStyle: {
+//                                    color: 'rgba(0,250,0,0.3)'
+                                }
+                            }
+                        },
+                        data: vals
+                    }, {
+                        name: '卧室数量对比',
+                        type: 'radar',
+                        radarIndex: 1,
+                        itemStyle: {
+                            emphasis: {
+                                lineStyle: {
+                                    width: 5
+                                }
+                            }
+                        },
+                        data: bvals
+                    }];
+                    option = {
+                        title: {
+                            text:'数据对比',
+                            subtext:'基于上一日数据生成'
+                        },
+                        legend: {
+                            data: resp.y.concat(resp.b),
+                            selected:{'新都':false,'郫都':false,'都江堰':false,'青白江':false,'双流':false,'天府新区南区':false,'高新西':false,
+                                '天府新区':false,'温江':false,'金牛':false,'青羊':false
+                            }
+                        },
+                        tooltip:{
+                            trigger: 'item',
+                            padding: 10
+                        },
+                        radar: [
+                            {
+                                indicator: [
+                                    { text: '在售数' },
+                                    { text: '降价数' },
+                                    { text: '涨价数' },
+                                    { text: '关注热度' },
+                                    { text: '平均总价' },
+                                    { text: '平均单价' }
+                                ],
+                                center: ['25%', '55%'],
+                                radius: 158,
+                                startAngle: 60,
+                                splitNumber: 4,
+                                name: {
+                                    formatter:'{value}',
+                                    textStyle: {
+                                        color:'#72ACD1'
+                                    }
+                                },
+                                splitArea: {
+                                    areaStyle: {
+                                        color: ['rgba(114, 172, 209, 0.2)',
+                                            'rgba(114, 172, 209, 0.4)', 'rgba(114, 172, 209, 0.6)',
+                                            'rgba(114, 172, 209, 0.8)', 'rgba(114, 172, 209, 1)'],
+                                        shadowColor: 'rgba(0, 0, 0, 0.3)',
+                                        shadowBlur: 10
+                                    }
+                                },
+                                axisLine: {
+                                    lineStyle: {
+                                        color: 'rgba(255, 255, 255, 0.5)'
+                                    }
+                                },
+                                splitLine: {
+                                    lineStyle: {
+                                        color: 'rgba(255, 255, 255, 0.5)'
+                                    }
+                                }
+                            },
+                            {
+                                indicator: [
+                                    { text: '在售数' },
+                                    { text: '降价数' },
+                                    { text: '涨价数' },
+                                    { text: '建筑面积' },
+                                    { text: '关注热度' },
+                                    { text: '平均总价' },
+                                    { text: '平均单价' }
+                                ],
+                                center: ['75%', '55%'],
+                                shape: 'circle',
+                                name: {
+                                    textStyle: {
+                                        color:'#000000'
+                                    }
+                                },
+                                radius: 148
+                            }
+                        ],
+                        series: ylist
+                    }
+                    console.log(option);
+                    dstcpr.setOption(option);
+                },
+                error: function () {
+                    dstcpr.hideLoading();
+                    alert('获取行政区对比数据失败！');
+                }
+            });
+
             var dap = echarts.init(document.getElementById('districtAvgPrice'));
             dap.showLoading();
             $.ajax({
