@@ -5,6 +5,7 @@ import logging.handlers
 import os
 import time
 import threading
+import traceback
 
 class logutil(object):
     def __init__(self, name =''):
@@ -57,7 +58,10 @@ class logutil(object):
         self.logger.warning(message)
 
     def error(self, err):
-        message = '[{0}] {1}'.format(threading.current_thread().name, err)
+        if isinstance(err, Exception):
+            message = '[{0}] {1}'.format(threading.current_thread().name, traceback.format_exc())
+        else:
+            message = '[{0}] {1}'.format(threading.current_thread().name, err)
         self.logger.error(message)
 
 log = logutil()

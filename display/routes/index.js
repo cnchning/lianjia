@@ -31,7 +31,7 @@ router.post('/getdstcpr', function(req, res, next) {
         "   LEFT JOIN (select bedroom_num, count(0) as numup from houseA inner JOIN pricelog on houseA.id=pricelog.id and DATEDIFF(pricelog.createDate,NOW())=-1 and pricetrend='up'	GROUP BY bedroom_num) as b on a.bedroom_num=b.bedroom_num" +
         "   LEFT JOIN (select bedroom_num, count(0) as numdown from houseA inner JOIN pricelog on houseA.id=pricelog.id and DATEDIFF(pricelog.createDate,NOW())=-1 and pricetrend='down'	GROUP BY bedroom_num) as c on a.bedroom_num=c.bedroom_num " +
         "   LEFT JOIN (select bedroom_num,(sum(follow)+sum(take_look)*7) as hot from houseA where DATEDIFF(NOW(),touchTime)=1 group by bedroom_num) as d on a.bedroom_num=d.bedroom_num" +
-        "   order by hot desc;";
+        "   order by bn;";
     logger.debug('/getdstcpr.sql: ' + sql);
     mysql.query(sql, function (err, data) {
         if(!data) return false;
