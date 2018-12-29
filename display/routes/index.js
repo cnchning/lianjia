@@ -67,13 +67,13 @@ router.post('/getdap', function(req, res, next) {
             ' where district in (\'' + districts + '\') and ymd%7=(DATE_FORMAT(NOW(),\'%Y%m%d\')-1)%7 group by ymd,ds' +
             '    UNION' +
             '    SELECT ymd,\'全成都\' as ds, avg_unit_price as dp from maininfo where ymd%7=(DATE_FORMAT(NOW(),\'%Y%m%d\')-1)%7' +
-            '    order by ymd';
+            '    order by ymd, dp desc';
     } else {
         sql = 'select ymd, district as ds, cast(sum(unit_price)/count(0) as DECIMAL(10,2)) as dp from avgDistrict' +
             ' where district in (\'' + districts + '\') group by ymd,ds' +
             '    UNION' +
             '    SELECT ymd,\'全成都\' as ds, avg_unit_price as dp from maininfo' +
-            '    order by ymd';
+            '    order by ymd, dp desc';
     }
     logger.debug('/getdap.sql: ' + sql);
     mysql.query(sql, function (err, data) {
@@ -103,11 +103,11 @@ router.post('/getpap', function(req, res, next) {
     if(dt=='week') {
         sql = 'select ymd, position as ds, cast(sum(unit_price)/count(0) as DECIMAL(10,2)) as dp from avgPosition' +
             ' where position in (\'' + positions + '\') and ymd%7=(DATE_FORMAT(NOW(),\'%Y%m%d\')-1)%7 group by ymd,ds' +
-            '    order by ymd';
+            '    order by ymd, dp desc';
     } else {
         sql = 'select ymd, position as ds, cast(sum(unit_price)/count(0) as DECIMAL(10,2)) as dp from avgPosition' +
             ' where position in (\'' + positions + '\') group by ymd,ds' +
-            '    order by ymd';
+            '    order by ymd, dp desc';
     }
     logger.debug('/getpap.sql: ' + sql);
     mysql.query(sql, function (err, data) {
@@ -137,11 +137,11 @@ router.post('/geteap', function(req, res, next) {
     if(dt=='week') {
         sql = 'select ymd, housing_estate as ds, cast(sum(unit_price)/count(0) as DECIMAL(10,2)) as dp from avgEstate' +
             ' where housing_estate in (\'' + estates + '\') and ymd%7=(DATE_FORMAT(NOW(),\'%Y%m%d\')-1)%7 group by ymd,ds' +
-            '    order by ymd';
+            '    order by ymd, dp desc';
     } else {
         sql = 'select ymd, housing_estate as ds, cast(sum(unit_price)/count(0) as DECIMAL(10,2)) as dp from avgEstate' +
             ' where housing_estate in (\'' + estates + '\') group by ymd,ds' +
-            '    order by ymd';
+            '    order by ymd, dp desc';
     }
     logger.debug('/geteap.sql: ' + sql);
     mysql.query(sql, function (err, data) {
@@ -171,11 +171,11 @@ router.post('/getbap', function(req, res, next) {
     if(dt=='week') {
         sql = 'select ymd, concat(bedroom_num, \'居室\') as ds, cast(sum(unit_price)/count(0) as DECIMAL(10,2)) as dp from avgDistrict' +
             ' where bedroom_num>0 and ymd%7=(DATE_FORMAT(NOW(),\'%Y%m%d\')-1)%7 group by ymd,ds' +
-            '    order by ymd';
+            '    order by ymd, dp desc';
     } else {
         sql = 'select ymd, concat(bedroom_num, \'居室\') as ds, cast(sum(unit_price)/count(0) as DECIMAL(10,2)) as dp from avgDistrict' +
             ' where bedroom_num>0 group by ymd,ds' +
-            '    order by ymd';
+            '    order by ymd, dp desc';
     }
     logger.debug('/getbap.sql: ' + sql);
     mysql.query(sql, function (err, data) {

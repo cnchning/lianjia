@@ -9,34 +9,31 @@
   <body>
     <div style="">
       <div style="width: 98%; background-color: aliceblue;">
-        <div style="font-weight: bold; font-size: larger; text-align: center;margin: 10px;">调价数量（总数： <%= nh %>套）</div>
         <div id="changePriceNum" style="width:100%;height: 260px;margin: 0 auto;"></div>
       </div>
-      <div style="width: 98%; background-color: aliceblue;">
-        <div style="font-weight: bold; font-size: larger; text-align: center;margin: 10px;"></div>
+      <div style="width: 98%; background-color: aliceblue;margin-top: 10px;">
         <div id="districtCompare" style="width:100%;height: 380px;margin: 0 auto;"></div>
       </div>
-      <div style="width: 98%; background-color: aliceblue;">
-        <div style="font-weight: bold; font-size: larger; text-align: center;margin: 10px;">行政区单价变化</div>
+      <div style="width: 98%; background-color: aliceblue;margin-top: 10px;">
         <div id="districtAvgPrice" style="width:100%;height: 260px;margin: 0 auto;"></div>
       </div>
-      <div style="width: 98%; background-color: aliceblue;">
-        <div style="font-weight: bold; font-size: larger; text-align: center;margin: 10px;">片区单价变化</div>
+      <div style="width: 98%; background-color: aliceblue;margin-top: 10px;">
         <div id="positionAvgPrice" style="width:100%;height: 260px;margin: 0 auto;"></div>
       </div>
-      <div style="width: 98%; background-color: aliceblue;">
-        <div style="font-weight: bold; font-size: larger; text-align: center;margin: 10px;">小区单价变化</div>
+      <div style="width: 98%; background-color: aliceblue;margin-top: 10px;">
         <div id="estateAvgPrice" style="width:100%;height: 260px;margin: 0 auto;"></div>
       </div>
-      <div style="width: 98%; background-color: aliceblue;">
-        <div style="font-weight: bold; font-size: larger; text-align: center;margin: 10px;">户型单价变化</div>
+      <div style="width: 98%; background-color: aliceblue;margin-top: 10px;">
         <div id="bedroomAvgPrice" style="width:100%;height: 260px;margin: 0 auto;"></div>
       </div>
     </div>
     <script type="text/javascript">
         var cpn = echarts.init(document.getElementById('changePriceNum'));
         var optionMain = {
-            title: {},
+            title: {
+                text:'调价数量（总数： <%= nh %>套）',
+                subtext:'单价调整走势'
+            },
             tooltip: {
                 trigger: 'axis',
                 axisPointer: {
@@ -295,11 +292,22 @@
                     }
 
                     dap.setOption({
+                      title: {
+                          text:'行政区单价变化'
+                      },
                       xAxis: {
                           data: resp.x
                       },
                       legend: {
                           data: resp.y
+                      },
+                      tooltip:{
+                          trigger: 'axis',
+                          axisPointer: {
+                              type: 'cross'
+                          },
+//                          formatter: '{a} <br/>{b} : {c} ({d}%)',
+                          padding: 10
                       },
                       toolbox: {
                           show: true,
@@ -347,6 +355,15 @@
                     }
 
                     pap.setOption({
+                        title: {
+                            text:'片区单价变化'
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'cross'
+                            }
+                        },
                         xAxis: {
                             data: resp.x
                         },
@@ -394,6 +411,15 @@
                     }
 
                     eap.setOption({
+                        title: {
+                            text:'小区单价变化'
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'cross'
+                            }
+                        },
                         xAxis: {
                             data: resp.x
                         },
@@ -441,6 +467,15 @@
                     }
 
                     bap.setOption({
+                        title: {
+                            text:'户型单价变化'
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'cross'
+                            }
+                        },
                         xAxis: {
                             data: resp.x
                         },
