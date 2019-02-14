@@ -5,7 +5,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  mysql.query('select ymd, num_priceup as up, num_pricedown as down, num_pricedown+num_priceup as total,num_house as nh from maininfo order by ymd limit 60', function (err, data) {
+  mysql.query('select ymd, num_priceup as up, num_pricedown as down, num_pricedown+num_priceup as total,num_house as nh from maininfo order by ymd limit 120', function (err, data) {
       logger.debug(data);
       var x=[],ytotal=[],ydown=[],yup=[], nh=data[data.length-1].nh;
       for(var i=0;i<data.length;i++){
